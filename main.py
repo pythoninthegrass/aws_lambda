@@ -1,12 +1,14 @@
+#!/usr/bin/env python3
+
 import json
 import os
+import random
+from fastapi import FastAPI, HTTPException
+from fastapi.encoders import jsonable_encoder
+from mangum import Mangum
+from pydantic import BaseModel
 from typing import Literal, Optional
 from uuid import uuid4
-from fastapi import FastAPI, HTTPException
-import random
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-from mangum import Mangum
 
 
 class Book(BaseModel):
