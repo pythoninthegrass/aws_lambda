@@ -24,9 +24,11 @@ packages:
   - cloud-init
   - curl
   - dnsutils
+  - ec2-instance-connect
   - git
   - gnupg-agent
   - net-tools
+  - nginx
   - p7zip-full
   - python3.11
   - python3.11-venv
@@ -53,6 +55,7 @@ users:
 
 runcmd:
   - curl -s https://github.com/pythoninthegrass.keys >> /home/ubuntu/.ssh/authorized_keys
+  - mkdir -p /home/ubuntu/git && git clone https://github.com/pythoninthegrass/aws_lambda.git /home/ubuntu/git/aws_lambda
   - touch /var/log/ansible.log
   - runuser -l ansible -c "sudo chown ansible:ansible /var/log/ansible.log"
   - runuser -l ansible -c "sudo chmod 0777 /var/log/ansible.log"
@@ -164,6 +167,17 @@ write_files:
       gathering                   = smart
       fact_caching                = jsonfile
       fact_caching_connection     = /tmp/${USER}/facts
+
+  - path: /etc/nginx/sites-enabled/fastapi_nginx
+    owner: root:root
+    permissions: '0644'
+    content: |
+      server {
+          listen 80;
+          server_name <EC2_IP>;
+
+          location / {
+              proxy_pass http://127.0.0.1:8000;
 
 # bootcmd:
 
